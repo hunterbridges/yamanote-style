@@ -11,29 +11,25 @@ Rider.prototype.select = function(station) {
   }
 
   if (this.currentStationId === station.id) {
-    console.log("Stop");
     this.setNextStation(null);
     this.setCurrentStation(null);
-
-    this.currentAudio.stop();
-    this.currentAudio = null;
+    this.stopAudio();
   } else {
     if (!!this.currentStationId) {
-      // Currently playing, make transition.
-      console.log("Switch");
       this.setNextStation(station);
-
-      // Gracefully end any playing sounds?
-      this.currentAudio.stop();
-      this.currentAudio = null;
-
+      this.stopAudio();
       this.arriveAtNextStation();
     } else {
-      // Not playing. Start from scratch.
-      console.log("Start");
       this.setCurrentStation(station);
       this.departCurrentStation();
     }
+  }
+};
+
+Rider.prototype.stopAudio = function() {
+  if (!!this.currentAudio) {
+    this.currentAudio.stop();
+    this.currentAudio = null;
   }
 };
 
