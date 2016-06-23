@@ -1,12 +1,22 @@
 var Rider = function() {
   this.currentDirection = 'cw';
+  this.melodies = {};
+  this.announcements = {};
 };
 
 Rider.prototype.select = function(station) {
+  if (!!this.enqueuedAction) {
+    clearTimeout(this.enqueuedAction);
+    this.enqueuedAction = null;
+  }
+
   if (this.currentStationId === station.id) {
     console.log("Stop");
     this.setNextStation(null);
     this.setCurrentStation(null);
+
+    this.currentAudio.stop();
+    this.currentAudio = null;
   } else {
     if (!!this.currentStationId) {
       // Currently playing, make transition.
@@ -14,6 +24,8 @@ Rider.prototype.select = function(station) {
       this.setNextStation(station);
 
       // Gracefully end any playing sounds?
+      this.currentAudio.stop();
+      this.currentAudio = null;
 
       this.arriveAtNextStation();
     } else {
@@ -57,9 +69,21 @@ Rider.prototype.arriveAtNextStation = function() {
   var nextStation = YamanoteLine.stations[this.nextStationId];
   var currentStation = YamanoteLine.stations[this.currentStationId];
 
-  this.setCurrentStation(nextStation);
+  var announcement = this.getArrivalAnnouncement(nextStation);
+  var rider = this;
+  rider.currentAudio = announcement;
+  announcement.play().bind('ended', function() {
+    rider.currentAudio = null;
 
-  this.setNextStation(null);
+    rider.setCurrentStation(nextStation);
+    rider.setNextStation(null);
+
+    rider.enqueuedAction = setTimeout(function() {
+      rider.departCurrentStation();
+    }, nextStation[rider.currentDirection].timeAtStation);
+
+    announcement.unbind('ended');
+  });
 };
 
 Rider.prototype.getNextStation = function() {
@@ -89,8 +113,66 @@ Rider.prototype.departCurrentStation = function() {
 
   var currentStation = YamanoteLine.stations[this.currentStationId];
 
-  // Play departure jingle...
+  var melody = this.getDepartureMelody(currentStation, this.currentDirection);
+  var rider = this;
+  rider.currentAudio = melody;
+  melody.play().bind('ended', function() {
+    rider.currentAudio = null;
 
-  var nextStation = this.getNextStation();
-  this.setNextStation(nextStation);
+    var nextStation = rider.getNextStation();
+    rider.setNextStation(nextStation);
+
+    rider.enqueuedAction = setTimeout(function() {
+      rider.arriveAtNextStation();
+    }, currentStation[rider.currentDirection].timeToNextStation);
+
+    melody.unbind('ended');
+  });
 };
+
+Rider.prototype.getMelody = function(melodyName) {
+  if (!!this.melodies[melodyName]) {
+    return this.melodies[melodyName];
+  } else {
+    var melody = new buzz.sound('/audio/melody/'+melodyName, {formats: ["mp3", "ogg"]});
+    this.melodies[melodyName] = melody;
+    return melody;
+  }
+}
+
+Rider.prototype.getDepartureMelody = function(station, direction) {
+  if (!station.departureMelodies) {
+    station.departureMelodies = {};
+  }
+
+  if (!station.departureMelodies[direction]) {
+    var melodyName = station[direction].melody;
+    var melody = this.getMelody(melodyName);
+    station.departureMelodies[direction] = melody;
+    return melody;
+  }
+
+  return station.departureMelodies[direction];
+};
+
+Rider.prototype.getAnnouncement = function(announcementName) {
+  if (!!this.announcements[announcementName]) {
+    return this.announcements[announcementName];
+  } else {
+    var announcement = new buzz.sound('/audio/announce/'+announcementName, {formats: ["mp3", "ogg"]});
+    this.announcements[announcementName] = announcement;
+    return announcement;
+  }
+}
+
+Rider.prototype.getArrivalAnnouncement = function(station) {
+  if (!station.arrivalAnnouncement) {
+    var announcementName = station.id;
+    var announcement = this.getAnnouncement(announcementName);
+    station.arrivalAnnouncement = announcement;
+    return announcement;
+  }
+
+  return station.arrivalAnnouncement;
+};
+

@@ -19,7 +19,6 @@ $(document).ready(function() {
 
   var layout = function() {
     // Lulz. This can be sped up by diffing instead of emptying.
-
     $topArea.empty();
     $bottomArea.empty();
     $leftArea.empty();
