@@ -26,12 +26,12 @@ $(document).ready(function() {
 
     var weight = 0.75;
     var tbRatio = weight * $topArea.innerWidth() / (weight * $topArea.innerWidth() + $rightArea.innerHeight());
-    var lrRatio = 1.0 - tbRatio;
-
-    var tCount = Math.floor(YamanoteLine.route.cw.length / 2 * tbRatio);
-    var bCount = Math.ceil(YamanoteLine.route.cw.length / 2 * tbRatio);
-    var lCount = Math.floor(YamanoteLine.route.cw.length / 2 * lrRatio);
-    var rCount = Math.ceil(YamanoteLine.route.cw.length / 2 * lrRatio);
+    var tbCount = Math.floor(YamanoteLine.route.cw.length * tbRatio)
+    var lrCount = YamanoteLine.route.cw.length - tbCount;
+    var tCount = Math.floor(tbCount / 2.0);
+    var bCount = Math.ceil(tbCount / 2.0);
+    var lCount = Math.floor(lrCount / 2.0);
+    var rCount = Math.ceil(lrCount / 2.0);
 
     var i = 0;
     for (var j = 0; j < tCount; j++, i++) {
