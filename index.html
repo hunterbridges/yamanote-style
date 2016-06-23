@@ -1,0 +1,77 @@
+---
+layout: default
+---
+
+<div id="yamanote-loop-outline">
+</div>
+<div id="interface-layer" class="relative">
+  <div id="interface-wrapper" class="flex flex-column">
+    <div id="top-area">
+
+      {% for i in (1..3) %}
+      <a class="station" href="#">
+        <div class="square"></div>
+        <div class="name">
+          <div class="japanese">
+            池袋
+          </div>
+          <div class="english">
+            Ikebukuro {{ i }}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+
+    </div>
+    <div class="flex-center" id="middle-wrapper">
+      <div id="left-area">
+
+      {% for i in (10..12) %}
+      {% endfor %}
+
+      </div>
+
+      <div id="center-area" class="bold p2 mx-auto center">
+        <!--<div id="indicator-display">Ikebukuro</div>-->
+        <h2 class="m0">山手線　スタイル</h2>
+        <h1 class="m0">Yamanote Style</h1>
+        <p class="m0 weight-light">おとのａｅｓｔｈｅｔｉｃ</p>
+      </div>
+
+      <div id="right-area">
+
+      {% for i in (4..6) %}
+        <a class="station" href="#">
+          <div class="square"></div>
+          <div class="name">
+            <div class="japanese">
+              池袋
+            </div>
+            <div class="english">
+              Ikebukuro {{ i }}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+
+      </div>
+    </div>
+    <div id="bottom-area">
+
+      {% for i in (7..9) %}
+        <a class="station" href="#">
+          <div class="square"></div>
+          <div class="name">
+            <div class="japanese">
+              池袋
+            </div>
+            <div class="english">
+              Ikebukuro {{ i }}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
